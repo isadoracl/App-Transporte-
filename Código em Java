@@ -1,0 +1,205 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+
+    System.out.println("Digite seu nome: ");
+    String nome = scanner.nextLine();
+    System.out.println("Digite seu cpf: (Apenas Números) ");
+    String cpf = scanner.nextLine();
+
+     if (isAdmin(nome, cpf)) {
+        administrardor admin = new administrardor();
+        admin.entrar();
+        int menu; 
+
+       do {
+         System.out.println("\n");
+         System.out.println("**Escolha a categoria do problema a ser relatado**");
+         System.out.println("1. Relatório de Ocorrências");
+         System.out.println("2. Sair");
+         menu = scanner.nextInt();
+
+         ocorrencia ocorrencia = new ocorrencia();
+         switch (menu) {
+           case 1:
+           admin.relatorio();
+           break;
+           case 2:
+           System.out.println("Programa encerrado");
+           break;
+           default:
+           System.out.println("Opção inválida, digite novamente.");
+           break;}
+        } while (menu != 5);
+     } else {
+
+           System.out.println("Seja bem-vindo!");
+           int menu; 
+
+        do {
+             System.out.println("\n");
+            System.out.println("**Escolha a categoria do problema a ser relatado**");
+            System.out.println("1. Relatar Acontecimento");
+            System.out.println("2. Sugerir Melhorias");
+            System.out.println("3. Fazer Elogios");
+            System.out.println("4. Sair");
+            menu = scanner.nextInt();
+
+            ocorrencia ocorrencia = new ocorrencia();
+            switch (menu) {
+                case 1:
+                ocorrencia.dados(nome, cpf);
+                ocorrencia.acontecimento(nome, cpf);
+                break;
+                case 2:
+                ocorrencia.dados(nome, cpf);
+                ocorrencia.melhoria(nome, cpf);
+                break;
+                case 3:
+                ocorrencia.dados(nome, cpf);
+                ocorrencia.elogios(nome, cpf);
+                break;
+                case 4:
+                System.out.println("Programa encerrado");
+                break;
+                default:
+                System.out.println("Opção inválida, digite novamente.");
+            break;}
+        } while (menu != 4);
+        }
+    }
+    
+  // Verifique aqui as credenciais do administrador
+  //o nome é "admin" e o CPF é "123456789"
+    public static boolean isAdmin(String nome, String cpf) {
+        return nome.equals("admin") && cpf.equals("123456789");
+    }
+}
+
+_____________________________________________________________________________________________________________________________________________
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+
+public class ocorrencia { 
+
+    Scanner scanner = new Scanner(System.in);
+    int linha;
+    Date horario;
+    Date data;
+
+    
+    //informar dados do onibus
+    public void dados(String nome, String cpf) {
+        System.out.println("Informe a linha do ônibus:");
+        linha = scanner.nextInt();
+
+        SimpleDateFormat horarioFormatter = new SimpleDateFormat("HH:mm"); 
+        boolean horarioValido = false;
+
+        while (!horarioValido) {
+            System.out.println("Informe o horário do acontecimento (HH:mm):");
+            try {
+                horario = horarioFormatter.parse(scanner.next());
+                horarioValido = true;
+            } catch (ParseException e) {
+                System.out.println("Hora Inválida. Tente novamente.");
+            }
+        }
+
+        SimpleDateFormat dataFormatter = new SimpleDateFormat("dd/MM/yyyy"); 
+        boolean dataValida = false;
+
+        while (!dataValida) {
+            System.out.println("Informe a data do acontecimento (dd/MM/yyyy):");
+            String dataString = scanner.next();
+            try {
+                data = dataFormatter.parse(dataString);
+                dataValida = true;
+            } catch (ParseException e) {
+                System.out.println("Data Inválida. Tente novamente.");
+            }
+        }
+    }
+
+
+    //informar detalhes do acontecimento
+    public void acontecimento(String nome, String cpf){
+        System.out.println("Digite o acontecimento: ");
+        String acontecimento = scanner.next();
+        saveToFile(nome, cpf, "Acontecimento", acontecimento);
+        System.out.println("Acontecimento registrado com sucesso, iremos analisar e tomarmos providências necessárias!");
+    }
+
+
+
+    //informar detalhes da melhoria
+  public void melhoria(String nome, String cpf){
+    System.out.println("Digite sua sugestão de melhoria: ");
+    String melhoria = scanner.next();
+    saveToFile(nome, cpf, "Melhoria", melhoria);
+    System.out.println("Sugestão de melhoria registrada com sucesso! Obrigado por nos ajudar a melhorar nosso serviço!");
+  }
+
+
+
+    //informar detalhes do elogio
+ public void elogios(String nome, String cpf){
+    System.out.println("Digite seu elogio: ");
+    String elogio = scanner.next();
+    saveToFile(nome, cpf, "Elogio", elogio);
+    System.out.println("Obrigado pelo elogio, ficamos feliz em ouvir sua opinião!");
+  }
+
+    
+     //armazenar informações no arquivo
+  public void saveToFile(String nome, String cpf, String tipo, String mensagem) {
+      try (FileWriter fw = new FileWriter("ocorrencias.txt", true);
+           PrintWriter pw = new PrintWriter(fw)) {
+          pw.println("Nome: " + nome);
+          pw.println("CPF: " + cpf);
+          pw.println("Tipo: " + tipo);
+          pw.println("Mensagem: " + mensagem);
+          pw.println("Linha: " + linha);
+          pw.println("Horário: " + new SimpleDateFormat("HH:mm").format(horario));
+          pw.println("Data: " + new SimpleDateFormat("dd/MM/yyyy").format(data));
+          pw.println("---------------");
+      } catch (IOException e) {
+          System.out.println("Erro ao salvar no arquivo: " + e.getMessage());
+      }
+  }
+}
+
+_____________________________________________________________________________________________________________________________________________
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class administrardor {
+    public void entrar() {
+        System.out.println("Seja bem-vindo Administrador!");
+    }
+
+
+    //gerar relatorio do adm
+    public void relatorio() {
+        System.out.println("Relatório de ocorrências:");
+        try (BufferedReader br = new BufferedReader(new FileReader("ocorrencias.txt"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo: " + e.getMessage());
+        }
+    }
+}
